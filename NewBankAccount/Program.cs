@@ -14,15 +14,15 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
             bool isLoggedin = false;      // bool för att kontrollera inloggning                                         
 
             string[,] users = new string[5, 2];  //array med användare och deras pinkoder
-            users[0, 0] = "Elin";
+            users[0, 0] = "ELIN";
             users[0, 1] = "111";
-            users[1, 0] = "Marcus";
+            users[1, 0] = "MARCUS";
             users[1, 1] = "222";
-            users[2, 0] = "Hanna";
+            users[2, 0] = "HANNA";
             users[2, 1] = "333";
-            users[3, 0] = "Jesper";
+            users[3, 0] = "JESPER";
             users[3, 1] = "444";
-            users[4, 0] = "Kenneth";
+            users[4, 0] = "KENNETH";
             users[4, 1] = "555";
 
             decimal[,] accounts = new decimal[5, 2] {           //array med användarnas konton
@@ -34,21 +34,18 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
             string[] whatAccount = new string[2];  //array med info om vilket konto som används
             whatAccount[0] = "Lönekonto";
             whatAccount[1] = "Sparkonto";
-            //do
-            //{
+            
+            while(isRunning2)                                
+                {
+                    Console.WriteLine("Välkommen till banken!");                
                 do
                 { 
-                {
-                    Console.WriteLine("Välkommen till banken!");
-                }
-                
-                
                     try
                     {
                         Console.WriteLine("Skriv in ditt namn:");  //inloggning
-                        userName = Console.ReadLine();
+                        userName = Console.ReadLine().ToUpper();
                         Console.WriteLine("Skriv in din pinkod:");
-                        pinCode = Console.ReadLine();
+                        pinCode = Console.ReadLine(); 
                     }
                     catch (Exception ex)   //fånga upp feltryckning
                     {
@@ -63,16 +60,18 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
                             attemptstoLogin = 4;    //avslutar loopen
                         }
                     }
+                    attemptstoLogin++;//räknar antal försök att logga in
                     if (attemptstoLogin < 3)
                     {
-                        Console.WriteLine("Tyvärr, du lyckades inte logga in, försök igen!");
-                        attemptstoLogin++;  //räknar antal försök att logga in
-                    }
-                    else if (attemptstoLogin == 3)  //vid fler än tre försök stängs..........
+                        Console.WriteLine("Tyvärr, du lyckades inte logga in, försök igen!");                          
+                    }                   
+                    if (attemptstoLogin == 3)  //vid tre försök stängs..........
                     {
-                        Console.WriteLine("Tyvärr, du lyckades inte logga in på tre försök.");                        
+                        Console.WriteLine("Tyvärr, du lyckades inte logga in på tre försök.");
+                        isRunning2 = false;    //avslutar hela programmet
                     }
-                } while (attemptstoLogin < 3); //loop pågår sålänge antal försök är mindre än 3
+                    
+                } while (attemptstoLogin <3); //loop pågår sålänge antal försök är mindre än 3
 
                 if (isLoggedin)  //om man lyckats logga in
                 {
@@ -104,15 +103,14 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
                                 isRunning1 = false;
                                 break;
                             default:
-                                Console.WriteLine("Ogiltigt val.");  //om användaren knappar in bokstäver
+                                Console.WriteLine("Ogiltigt val. Klicka Enter för att återgå till menyn.");  //om användaren knappar in bokstäver
                                 break;
                         }
                         Console.ReadLine();
                     } while (isRunning1);   //meny-loop
-                }
-                
-            //} while (isRunning2); //loop för hela programmet
-        }  //main
+                }                
+            }  //loop för hela programmet
+        }  
         public static int CheckIndex(string userName, string[,] users)  //metod för att se vilket konto som ska användas
         {
             int index = 10;              
@@ -139,18 +137,29 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
         }
         private static void Transfers(string userName, string [] whatAccount, string[,] users, decimal[,] accounts)
         {                                                               //metod för att föra över pengar
-            Console.WriteLine("Ange summan du vill överföra:");
-            decimal sum = decimal.Parse(Console.ReadLine());  //summan som ska flyttas
-            Console.WriteLine("Från vilket konto vill du ta pengarna?: Tryck: 0:Lönekonto 1:Sparkonto");
-            int fromAccount = int.Parse(Console.ReadLine());  //från detta konto ska pengar tas
-            Console.WriteLine("Till vilket konto?:Tryck: 0:Lönekonto 1:Sparkonto");
-            int toAccount = int.Parse(Console.ReadLine());  //till detta konto ska pengar flyttas
+            decimal sum = 0;
+            int fromAccount = 0;
+            int toAccount = 0;
             decimal newValue = 0;  //nya summan på kontot pengar tas från
             decimal newValue2 = 0;  //nya summan på kontot pengar flyttas till
             int k;  //variabel att använda för att räkna med rätt konto
-            k = toAccount;  
+            k = toAccount;
             int index = CheckIndex(userName, users);  //anrop av metod för att använda rätt persons konto
 
+            try
+            {
+                Console.WriteLine("Ange summan du vill överföra:");
+                sum = decimal.Parse(Console.ReadLine());  //summan som ska flyttas
+                Console.WriteLine("Från vilket konto vill du ta pengarna?: Tryck: 0:Lönekonto 1:Sparkonto");
+                fromAccount = int.Parse(Console.ReadLine());  //från detta konto ska pengar tas
+                Console.WriteLine("Till vilket konto?:Tryck: 0:Lönekonto 1:Sparkonto");
+                toAccount = int.Parse(Console.ReadLine());  //till detta konto ska pengar flyttas
+            }
+            catch (Exception ex)   //fånga upp feltryckning
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
             for (int i = 0; i < accounts.GetLength(1); i++)  //loopar igenom konton
             {
                 if (accounts[index, i] != 0)
@@ -170,15 +179,24 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
         } 
         private static void WithDrawal(string userName, string[] whatAccount, string[,] users, decimal[,] accounts)  //metod för att ta ut kontanter
         {
-            Console.WriteLine("Vilket konto vill du göra ett uttag från? Tryck: 0:Lönekonto 1:Sparkonto");
-            int cash = int.Parse(Console.ReadLine());  // valt konto
-            Console.WriteLine("Vilken summa vill du ta ut?");
-            decimal sum2 = decimal.Parse(Console.ReadLine());  //kontantsumma
+            int cash = 0;
+            decimal sum2 = 0;
             int index = CheckIndex(userName, users);
             decimal cashOnAccount = 0;  // nya saldot på kontot
-            int counts=0;    //variabel för att räkna antal pinkodsförsök
+            int counts = 0;    //variabel för att räkna antal pinkodsförsök
             bool isLoggedin = false;
 
+            try
+            {
+                Console.WriteLine("Vilket konto vill du göra ett uttag från? Tryck: 0:Lönekonto 1:Sparkonto");
+                cash = int.Parse(Console.ReadLine());  // valt konto
+                Console.WriteLine("Vilken summa vill du ta ut?");
+                sum2 = decimal.Parse(Console.ReadLine());  //kontantsumma
+            }
+            catch (Exception ex)   //fånga upp feltryckning
+            {
+                Console.WriteLine(ex.Message);
+            }            
             do
             {
                 Console.WriteLine("Pinkod måste anges:");
@@ -186,23 +204,24 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
 
                 for (int i = 0; i < users.GetLength(0); i++)
                 {
-                    if (tryPin == users[i, 1])  //om användare angett rätt pin
+                    if (userName==users[i,0] && tryPin == users[i, 1])  //om rätt användare angett rätt pin
                     {
-                        Console.WriteLine("Rätt pinkod");
+                        Console.WriteLine("Rätt pinkod. Varsågod, ta dina pengar:");
                         isLoggedin = true;
                         counts = 4;
                     }
                 }
+                counts++;  //räknare
                 if (counts < 3)
                 {
                     Console.WriteLine("Fel pinkod, försök igen.");
-                    counts++;  //räknare
-                }
-                else if (counts == 3)
+                }                
+                if (counts == 3)
                 {
-                    Console.WriteLine("Tyvärr, din pinkod stämmer inte. Klicka Enter för att återgå till menyn.");
+                    Console.WriteLine("Tyvärr, din pinkod stämmer inte. Var vänlig börja om. ");
                 }
-            } while (counts < 3);  //loopar sålänge inte användare gjort tre försök
+            } while (counts <3);  //loopar sålänge inte användare gjort tre försök
+
             if (isLoggedin)
             {
                 for (int i = 0; i < accounts.GetLength(1); i++)
@@ -218,6 +237,6 @@ namespace NewBankAccount  //SUT22 Elin Linderholm
                 }
             }
         }
-    } //class
-} //namespace 
+    } 
+} 
 
